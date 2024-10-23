@@ -5,6 +5,9 @@
 	<title>Weather Complete</title>
 	<meta charset="UTF-8" />
   <link rel="stylesheet" type="text/css" href="style.css">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Roboto:ital,wght@0,100;0,300;0,400;0,500;0,700;0,900;1,100;1,300;1,400;1,500;1,700;1,900&display=swap" rel="stylesheet">
 </head>
 
 <body>
@@ -23,7 +26,7 @@
 
 <script>
 		// USE YOUR OWN API KEY
-		const apiKey = "";
+		const apiKey = "1422034e689414c166819ffe75a0560d";
 
         // variable that stores the city that is chosen
 		let city;
@@ -39,6 +42,7 @@
 			date.setDate(date.getDate() + daysFromNow);
 			output += date.toLocaleString('en-US', { weekday: 'long' }).toUpperCase()
 			output += ' ' + date.getDate()
+			console.log(output)
 			return output
 		}
 
@@ -102,6 +106,72 @@
 			//printing the city object to the console
 			console.log(city);
             // BEGIN CODING HERE
+
+			let temp;
+			let desc;
+
+			getTodayTemp(lat, lon, fullName);
+
+			for (let i = 0; i < 5; i++) {
+				getNext5Days(lat, lon, i)
+			}
+
+		}
+
+		function getTodayTemp(lat, lon, fullName) {
+			apiCall = `https://api.openweathermap.org/data/2.5/weather?lat=${lat}&lon=${lon}&appid=${apiKey}&units=imperial`;
+			fetch(apiCall)
+			.then((response) => response.json())
+			.then((data) => {
+				console.log(data.weather[0].description)
+				console.log(data.weather[0].icon)
+				console.log(data.main.temp)
+
+				icon = data.weather[0].icon
+				desc = data.weather[0].description
+				temp = Math.round(data.main.temp)
+
+				const weatherContainer = document.querySelector("#weather-container");
+				const today = document.createElement("h2");
+				const location = document.createElement("h1");
+				const todayDiv = document.createElement("div")
+				todayDiv.id = "todayDiv";
+				const tempDiv = document.createElement("div")
+				tempDiv.id = "tempDiv";
+				const image = document.createElement("img")
+				image.id = "image"; image.src = `icons/${icon}.svg`;
+				today.innerText = formatDate(daysFromNow = 0);
+				location.innerText = "Weather for " + fullName;
+				weatherContainer.appendChild(today);
+				weatherContainer.appendChild(location);
+				weatherContainer.appendChild(todayDiv);
+
+				todayDiv.appendChild(tempDiv)
+				const description = document.createElement("p");
+				description.id = "description";
+				const temperature = document.createElement("p");
+				temperature.id = "tempP";
+				description.innerText = desc;
+				temperature.innerText = temp + "°";
+				tempDiv.appendChild(description);
+				tempDiv.appendChild(temperature);
+
+				todayDiv.appendChild(image)
+			})
+		}
+
+		function getNext5Days(lat, lon, i){
+			apiCall = `https://api.openweathermap.org/data/2.5/forecast?lat=30.2711286&lon=-97.7436995&appid=1422034e689414c166819ffe75a0560d&units=imperial`;
+			let temp;
+			let dec;
+			fetch(apiCall)
+			.then((response) => response.json())
+			.then((data) => {
+				formatDate(daysFromNow = i)
+				console.log(data.list[i * 8].main.temp_max)
+				console.log(data.list[i * 8].main.temp_min)
+				console.log(data.list[i * 8].weather[0].icon)
+			})
 		}
 	</script>
 </html>
